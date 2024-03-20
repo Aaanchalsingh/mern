@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 
 dotenv.config();
 
-const app = express();
+const app=express();
 app.use(express.json());
 app.use(cors());
 
@@ -19,21 +19,21 @@ mongoose.connect(process.env.ATLAS_URI_AUTH).then(() => {
   console.error("Error connecting to MongoDB:", err);
 });
 
-const userSchema = new mongoose.Schema({
+const userSchema=new mongoose.Schema({
   name: String,
   email: String,
   password: String
 });
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET=process.env.JWT_SECRET;
 
-const User = mongoose.model("User", userSchema);
-const checkLoggedIn = (req, res, next) => {
-  const token = req.headers.authorization;
+const User=mongoose.model("User", userSchema);
+const checkLoggedIn=(req, res, next) => {
+  const token=req.headers.authorization;
 
   if (token) {
     try {
-      const decoded = jwt.verify(token, JWT_SECRET);
+      const decoded=jwt.verify(token, JWT_SECRET);
       // If token is valid, send a response indicating that the user is already logged in
       res.status(403).json({ message: "User is already logged in" });
     } catch (error) {
@@ -47,12 +47,12 @@ const checkLoggedIn = (req, res, next) => {
 };
 
 app.post("/Login", checkLoggedIn, async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password }=req.body;
   try {
-    const user = await User.findOne({ email: email });
+    const user=await User.findOne({ email: email });
     if (user) {
-      if (password === user.password) {
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
+      if (password===user.password) {
+        const token=jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
         res.send({ message: "login success", token: token });
       } else {
         res.send({ message: "wrong credentials" });
@@ -65,15 +65,17 @@ app.post("/Login", checkLoggedIn, async (req, res) => {
     res.status(500).send({ message: "Internal Server Error" });
   }
 });
-
+app.get("/", async (req, res) => {
+  res.send("HI ITS ME BACKEND");
+})
 app.post("/Register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password }=req.body;
   try {
-    const existingUser = await User.findOne({ email: email });
+    const existingUser=await User.findOne({ email: email });
     if (existingUser) {
       res.send({ message: "User already exists" });
     } else {
-      const newUser = new User({ name, email, password });
+      const newUser=new User({ name, email, password });
       await newUser.save();
       res.send({ message: "Registration successful" });
     }
