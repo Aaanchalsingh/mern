@@ -41,7 +41,7 @@ async function onSubmit(e) {
       if(!id) return;
       setIsNew(false);
       const response = await fetch(
-        `https://mern-rust-seven.vercel.app/record/${params.id.toString()}`
+        `https://mern-backend-5m397p0ow-aanchal-singhs-projects.vercel.app/record/${params.id.toString()}`
       );
       if (!response.ok) {
         const message = `An error has occurred: ${response.statusText}`;
