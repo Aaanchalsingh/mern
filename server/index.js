@@ -1,90 +1,118 @@
-import express from "express";
-import cors from "cors";
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-import records from "./routes/record.js";
-import jwt from "jsonwebtoken";
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
-dotenv.config();
-
-const app=express();
+const app = express();
 app.use(express.json());
-app.use(cors({
-  origin: "https://mern-lac.vercel.app",
-  methods: ["POST", "GET"],
-  credentials: true
-}));
+app.use(cookieParser());
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use("/record", records);
+// Connect to MongoDB
+mongoose
+  .connect("mongodb://localhost:27017/mern_auth", {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  })
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
-mongoose.connect("mongodb+srv://Aanchal:Aanchal123@bunch.js15mci.mongodb.net/Authentication?retryWrites=true&w=majority").then(() => {
-  console.log("Connected to AuthDatabase");
-}).catch((err) => {
-  console.error("Error connecting to MongoDB:", err);
+// User Schema
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: [true, "Please enter an email"],
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: [true, "Please enter a password"],
+  },
 });
 
-const userSchema=new mongoose.Schema({
-  name: String,
-  email: String,
-  password: String
-});
-
-const JWT_SECRET="b46ee1ca72f9c2e4fdbaed0c26f2d5240081b9855ac50daf711d8f75b6f4e4d1";
-
-const User=mongoose.model("User", userSchema);
-const checkLoggedIn=(req, res, next) => {
-  const token=req.headers.authorization;
-  if (token) {
-    try {
-      const decoded=jwt.verify(token, JWT_SECRET);
-      res.status(403).json({ message: "User is already logged in" });
-    } catch (error) {
-      next();
-    }
-  } else {
+// Encrypt password before save
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
     next();
   }
+
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
+});
+
+// Compare entered password with stored hash
+userSchema.methods.matchPassword = async function (enteredPassword) {
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
-app.post("/Login", checkLoggedIn, async (req, res) => {
-  const { email, password }=req.body;
+// Generate JWT token
+userSchema.methods.getSignedToken = function () {
+  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRE,
+  });
+};
+
+const User = mongoose.model("User", userSchema);
+
+// User registration
+app.post("/register", async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const user=await User.findOne({ email: email });
+    let user = await User.findOne({ email });
+
     if (user) {
-      if (password===user.password) {
-        const token=jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '1h' });
-        res.send({ message: "login success", token: token });
-      } else {
-        res.send({ message: "wrong credentials" });
-      }
-    } else {
-      res.send("not registered");
+      return res.status(400).json({ message: "User already exists" });
     }
+
+    user = await User.create({
+      email,
+      password,
+    });
+
+    res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    console.error("Error logging in:", error);
-    res.status(500).send({ message: "Internal Server Error" });
-  }
-});
-app.get("/", async (req, res) => {
-  res.send("HI ITS ME BACKEND");
-})
-app.post("/Register", async (req, res) => {
-  const { name, email, password }=req.body;
-  try {
-    const existingUser=await User.findOne({ email: email });
-    if (existingUser) {
-      res.send({ message: "User already exists" });
-    } else {
-      const newUser=new User({ name, email, password });
-      await newUser.save();
-      res.send({ message: "Registration successful" });
-    }
-  } catch (error) {
-    console.error("Error registering user:", error);
-    res.status(500).send({ message: "Internal Server Error" });
+    console.error(error);
+    res.status(500).send("Server Error");
   }
 });
 
-app.listen(6969, () => {
-  console.log("Server started on port 6969");
+// User login
+app.post("/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const isMatch = await user.matchPassword(password);
+
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid credentials" });
+    }
+
+    const token = user.getSignedToken();
+
+    res.cookie("token", token, {
+      httpOnly: true,
+    });
+
+    res.status(200).json({ message: "Login successful" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Server Error");
+  }
 });
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

@@ -33,19 +33,15 @@ const Record = (props) => (
   </tr>
 );
 
-export default function RecordList() {
+const RecordList = () => {
   const [records, setRecords] = useState([]);
 
   useEffect(() => {
     async function getRecords() {
       try {
-        const response = await fetch(
-          `https://mern-backend-alpha.vercel.app/record`
-        );
+        const response = await fetch(`https://mern-backend-alpha.vercel.app/record`);
         if (!response.ok) {
-          const message = `An error occurred: ${response.statusText}`;
-          console.error(message);
-          return;
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
         const records = await response.json();
         setRecords(records);
@@ -55,20 +51,12 @@ export default function RecordList() {
     }
     getRecords();
   }, []);
+
   async function deleteRecord(id) {
     await fetch(`https://mern-backend-alpha.vercel.app/record/${id}`, {
       method: "DELETE",
     });
-    const newRecords = records.filter((el) => el._id !== id);
-    setRecords(newRecords);
-  }
-
-  function recordList() {
-    return records.map((record) => {
-      return (
-        <Record record={record} deleteRecord={deleteRecord} key={record._id} />
-      );
-    });
+    setRecords(records.filter((record) => record._id !== id));
   }
 
   return (
@@ -100,3 +88,4 @@ export default function RecordList() {
     </>
   );
 }
+export default RecordList;

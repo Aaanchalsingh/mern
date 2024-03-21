@@ -111,10 +111,13 @@ const Login = ({ setLoginUser }) => {
         </div>
         <div className="flex items-center justify-center mt-6">
           <Link
-            to="/Register"
-            className="inline-flex items-center text-xs font-thin text-center text-gray-500 hover:text-gray-700 dark:text-gray-100 dark:hover:text-white"
+            to="/register"
+            className="inline-flex items-center text-xs font-thin text-center text-gray-500 sm:text-sm dark:text-gray-100 hover:text-gray-700 dark:hover:text-white"
           >
-            <span className="ml-2">You don't have an account?</span>
+            Don't have an account?
+            <span className="ml-2 text-sm font-bold text-gray-700 dark:text-gray-200 hover:underline">
+              Sign up
+            </span>
           </Link>
         </div>
       </div>
