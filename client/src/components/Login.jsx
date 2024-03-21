@@ -21,7 +21,7 @@ const Login = ({ setLoginUser }) => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        "https://mern-backend-5m397p0ow-aanchal-singhs-projects.vercel.app/Login",
+        "https://mern-backend-alpha.vercel.app/Login",
         user
       );
       const token = res.data.token;

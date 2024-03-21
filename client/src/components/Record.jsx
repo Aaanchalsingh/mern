@@ -16,7 +16,7 @@ async function onSubmit(e) {
     const person = { ...form };
     try {
       // if the id is present, we will set the URL to /record/:id, otherwise we will set the URL to /record.
-      const response = await fetch(`https://mern-rust-seven.vercel.app/record${params.id ? "/"+params.id : ""}`, {
+      const response = await fetch(`https://mern-backend-alpha.vercel.app/record/${params.id ? "/"+params.id : ""}`, {
         // if the id is present, we will use the PATCH method, otherwise we will use the POST method.
         method: `${params.id ? "PATCH" : "POST"}`,
         headers: {
@@ -41,7 +41,7 @@ async function onSubmit(e) {
       if(!id) return;
       setIsNew(false);
       const response = await fetch(
-        `https://mern-backend-5m397p0ow-aanchal-singhs-projects.vercel.app/record${params.id.toString()}`
+        `https://mern-backend-alpha.vercel.app/record/${params.id.toString()}`
       );
       if (!response.ok) {
         const message = `An error has occurred: ${response.statusText}`;
@@ -75,7 +75,7 @@ async function onSubmit(e) {
       let response;
       if (isNew) {
         // if we are adding a new record we will POST to /record.
-        response = await fetch("https://mern-rust-seven.vercel.app/record", {
+        response = await fetch("https://mern-backend-alpha.vercel.app/record", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -84,7 +84,7 @@ async function onSubmit(e) {
         });
       } else {
         // if we are updating a record we will PATCH to /record/:id.
-        response = await fetch(`https://mern-rust-seven.vercel.app/record/${params.id}`, {
+        response = await fetch(`https://mern-backend-alpha.vercel.app/record/${params.id}`, {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -108,7 +108,7 @@ async function onSubmit(e) {
       const id = params.id?.toString() || undefined;
       if(!id) return;
       const response = await fetch(
-        `https://mern-rust-seven.vercel.app/record/${params.id.toString()}`
+        `https://mern-backend-alpha.vercel.app/record/${params.id.toString()}`
       );
       if (!response.ok) {
         const message = `An error has occurred: ${response.statusText}`;
