@@ -9,11 +9,7 @@ dotenv.config();
 
 const app=express();
 app.use(express.json());
-app.use(cors({
-  origin: "https://mern-lac.vercel.app",
-  methods: ["POST", "GET"],
-  credentials: true
-}));
+app.use(cors());
 
 app.use("/record", records);
 
