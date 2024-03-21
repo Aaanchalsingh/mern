@@ -22,12 +22,10 @@ const Register = () => {
   const register = () => {
     axios.post("https://mern-rust-seven.vercel.app/Register", user)
       .then((res) => {
-        // If registration is successful and a token is returned, store it in local storage
         const token = res.data.token;
         if (token) {
           localStorage.setItem('token', token);
         }
-        // Redirect to the home page or perform other actions after successful registration
         navigate("/");
       })
       .catch((err) => console.log(err));
