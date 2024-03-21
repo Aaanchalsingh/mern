@@ -56,7 +56,7 @@ export default function RecordList() {
 
   // This method will delete a record
   async function deleteRecord(id) {
-    await fetch(`https://mern-backend-5m397p0ow-aanchal-singhs-projects.vercel.app/${id}`, {
+    await fetch(`https://mern-backend-5m397p0ow-aanchal-singhs-projects.vercel.app${id}`, {
       method: "DELETE",
     });
     const newRecords = records.filter((el) => el._id !== id);
