@@ -11,13 +11,13 @@ const app=express();
 app.use(express.json());
 app.use(cors({
   origin: "https://mern-b9up.vercel.app",
-  methods:["POST","GET"],
-  credentials:true
+  methods: ["POST", "GET"],
+  credentials: true
 }));
 
 app.use("/record", records);
 
-mongoose.connect(process.env.ATLAS_URI_AUTH).then(() => {
+mongoose.connect("mongodb+srv://Aanchal:Aanchal123@bunch.js15mci.mongodb.net/Authentication?retryWrites=true&w=majority").then(() => {
   console.log("Connected to AuthDatabase");
 }).catch((err) => {
   console.error("Error connecting to MongoDB:", err);
@@ -29,23 +29,19 @@ const userSchema=new mongoose.Schema({
   password: String
 });
 
-const JWT_SECRET=process.env.JWT_SECRET;
+const JWT_SECRET="b46ee1ca72f9c2e4fdbaed0c26f2d5240081b9855ac50daf711d8f75b6f4e4d1";
 
 const User=mongoose.model("User", userSchema);
 const checkLoggedIn=(req, res, next) => {
   const token=req.headers.authorization;
-
   if (token) {
     try {
       const decoded=jwt.verify(token, JWT_SECRET);
-      // If token is valid, send a response indicating that the user is already logged in
       res.status(403).json({ message: "User is already logged in" });
     } catch (error) {
-      // If token is invalid or expired, continue to the next middleware
       next();
     }
   } else {
-    // If no token is present, continue to the next middleware
     next();
   }
 };

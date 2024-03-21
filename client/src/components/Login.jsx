@@ -20,7 +20,6 @@ const Login = ({ setLoginUser }) => {
   const login = async (e) => {
     e.preventDefault();
     try {
-      axios.defaults.withCredentials = true;
       const res = await axios.post(
         "https://mern-rust-seven.vercel.app/Login",
         user

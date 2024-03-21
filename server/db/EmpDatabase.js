@@ -2,8 +2,8 @@ import { MongoClient, ServerApiVersion } from "mongodb";
 import dotenv from 'dotenv';
 
 dotenv.config();
-const uri = process.env.ATLAS_URI_EMP ;
-const client = new MongoClient(uri, {
+const uri="mongodb+srv://Aanchal:Aanchal123@bunch.js15mci.mongodb.net/employees?retryWrites=true&w=majority";
+const client=new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
     strict: true,
@@ -22,6 +22,6 @@ async function connectToMongoDB() {
 
 connectToMongoDB();
 
-let db = client.db("employees");
+let db=client.db("employees");
 
 export default db;
