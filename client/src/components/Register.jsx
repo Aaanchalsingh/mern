@@ -20,6 +20,7 @@ const Register = () => {
   };
 
   const register = () => {
+    axios.defaults.withCredentials=true;
     axios.post("https://mern-rust-seven.vercel.app/Register", user)
       .then((res) => {
         const token = res.data.token;
