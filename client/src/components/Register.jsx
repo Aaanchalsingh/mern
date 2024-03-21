@@ -20,7 +20,7 @@ const Register = () => {
   };
 
   const register = () => {
-    axios.post("http://localhost:6969/Register", user)
+    axios.post("https://mern-rust-seven.vercel.app/Register", user)
       .then((res) => {
         // If registration is successful and a token is returned, store it in local storage
         const token = res.data.token;
