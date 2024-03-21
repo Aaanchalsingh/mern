@@ -10,7 +10,7 @@ dotenv.config();
 const app=express();
 app.use(express.json());
 app.use(cors({
-  origin: "https://mern-hko4kagvl-aanchal-singhs-projects.vercel.app",
+  origin: "https://mern-lac.vercel.app/",
   methods: ["POST", "GET"],
   credentials: true
 }));
