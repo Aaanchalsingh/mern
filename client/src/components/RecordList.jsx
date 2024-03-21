@@ -33,15 +33,18 @@ const Record = (props) => (
   </tr>
 );
 
-const RecordList = () => {
+export default function RecordList() {
   const [records, setRecords] = useState([]);
 
+  // This method fetches the records from the database.
   useEffect(() => {
     async function getRecords() {
       try {
         const response = await fetch(`https://mern-backend-alpha.vercel.app/record`);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const message = `An error occurred: ${response.statusText}`;
+          console.error(message);
+          return;
         }
         const records = await response.json();
         setRecords(records);
@@ -52,11 +55,25 @@ const RecordList = () => {
     getRecords();
   }, []);
 
+  // This method will delete a record
   async function deleteRecord(id) {
     await fetch(`https://mern-backend-alpha.vercel.app/record/${id}`, {
       method: "DELETE",
     });
-    setRecords(records.filter((record) => record._id !== id));
+    const newRecords = records.filter((el) => el._id !== id);
+    setRecords(newRecords);
+  }
+
+  function recordList() {
+    return records.map((record) => {
+      return (
+        <Record
+          record={record}
+          deleteRecord={deleteRecord} // Pass the deleteRecord function
+          key={record._id}
+        />
+      );
+    });
   }
 
   return (
@@ -81,11 +98,12 @@ const RecordList = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="[&_tr:last-child]:border-0">{recordList()}</tbody>
+            <tbody className="[&_tr:last-child]:border-0">
+              {recordList()}
+            </tbody>
           </table>
         </div>
       </div>
     </>
   );
 }
-export default RecordList;
